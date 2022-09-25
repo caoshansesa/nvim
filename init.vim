@@ -304,11 +304,6 @@ autocmd FileType c,cpp,objc map <Leader>x <Plug>(operator-clang-format)
 " Toggle auto formatting:
 nmap <Leader>cf :ClangFormatAutoToggle<CR>
 
-autocmd FileType c ClangFormatAutoEnable
-autocmd FileType h ClangFormatAutoEnable
-autocmd FileType cpp ClangFormatAutoEnable
-autocmd FileType hpp ClangFormatAutoEnable
-
 " Clear highlighting on escape in normal mode
 nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
