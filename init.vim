@@ -165,7 +165,7 @@ call plug#end()
 
 " Gruvbox
 	colorscheme gruvbox
-	set background=dark    " Setting dark mode
+	"set background=dark    " Setting dark mode
 
 " Access and source vimrc
 	"Easy access to vimrc
@@ -226,146 +226,67 @@ nmap <leader>gs :G<CR>
 nmap <leader>gc :Commits<CR>
 
 " NeoVim basic configuration
-	filetype plugin on
-	" 设置为双字宽显示，否则无法完整显示如:☆
-	set t_ut= " 防止vim背景颜色错误
-	set showmatch " 高亮匹配括号
-	set matchtime=1
-	set report=0
-	set ignorecase
-	set nocompatible
-	set noeb
-	set softtabstop=4
-	set shiftwidth=4
-	set nobackup
-	set autoread
-	set nocompatible
-	set nu "设置显示行号
-	set backspace=2 "能使用backspace回删
-	syntax on "语法检测
-	set ruler "显示最后一行的状态
-	set laststatus=2 "两行状态行+一行命令行
-	set ts=4
-	set expandtab
-	set autoindent "设置c语言自动对齐
-	set t_Co=256 "指定配色方案为256
-	set selection=exclusive
-	" set selectmode=mouse,key
-	set tabstop=4 "设置TAB宽度
-	set history=1000 "设置历史记录条数   
-	" colorscheme desert
-	"共享剪切板
-	set clipboard+=unnamed 
-	set cmdheight=3
-	if version >= 603
-	     set helplang=cn
-	     set encoding=utf-8
-	endif
-	set fencs=utf-8,ucs-bom,shift-jis,gb18030,gbk,gb2312,cp936
-	set termencoding=utf-8
-	set encoding=utf-8
-	set fileencodings=ucs-bom,utf-8,cp936
-	set fileencoding=utf-8
-	set updatetime=300
-	set shortmess+=c
-	set signcolumn=yes
-    set completeopt-=preview
+filetype plugin on
+" 设置为双字宽显示，否则无法完整显示如:☆
+set t_ut= " 防止vim背景颜色错误
+set showmatch " 高亮匹配括号
+set matchtime=1
+set report=0
+set ignorecase
+set nocompatible
+set noeb
+set softtabstop=4
+set shiftwidth=4
+set nobackup
+set autoread
+set nocompatible
+set nu "设置显示行号
+set backspace=2 "能使用backspace回删
+syntax on "语法检测
+set ruler "显示最后一行的状态
+set laststatus=2 "两行状态行+一行命令行
+set ts=4
+set expandtab
+set autoindent "设置c语言自动对齐
+set t_Co=256 "指定配色方案为256
+set selection=exclusive
+set tabstop=4 "设置TAB宽度
+set history=1000 "设置历史记录条数   
+"共享剪切板
+set clipboard+=unnamed 
+set cmdheight=3
+if version >= 603
+     set helplang=cn
+     set encoding=utf-8
+endif
+set fencs=utf-8,ucs-bom,shift-jis,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
+set fileencodings=ucs-bom,utf-8,cp936
+set fileencoding=utf-8
+set updatetime=300
+set shortmess+=c
+set signcolumn=yes
+set completeopt-=preview
 
-	" hi Normal ctermfg=252 ctermbg=none "背景透明
-	" au FileType gitcommit,gitrebase let g:gutentags_enabled=0
-	if has("autocmd")
-	    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-	endif
-	inoremap jj <Esc> "将jj映射到Esc
+au FileType gitcommit,gitrebase let g:gutentags_enabled=0
+if has("autocmd")
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+inoremap jj <Esc> "将jj映射到Esc
 
-    " Automatic toggling between line number modes
-    set number relativenumber
+" Automatic toggling between line number modes
+set number relativenumber
 
-    augroup numbertoggle
-     autocmd!
-      autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-      autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-    augroup END
+augroup numbertoggle
+ autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
 
-" Include file
-    let $V=stdpath('config')
-    so $V/macos.vim
-    so $V/maps.vim
-    so $V/lsp.vim
-    so $V/markdown.vim
 " this is setting for auto completion
 set completeopt=menu,menuone,noselect
 
-lua <<EOF
-  -- Setup nvim-cmp.
-  local cmp = require'cmp'
-
-  cmp.setup({
-    snippet = {
-      -- REQUIRED - you must specify a snippet engine
-      expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-      end,
-    },
-    window = {
-      -- completion = cmp.config.window.bordered(),
-      -- documentation = cmp.config.window.bordered(),
-    },
-    mapping = cmp.mapping.preset.insert({
-      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-      ['<C-f>'] = cmp.mapping.scroll_docs(4),
-      ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
-      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-    }),
-    sources = cmp.config.sources({
-      { name = 'nvim_lsp' },
-      { name = 'vsnip' }, -- For vsnip users.
-      { name = 'luasnip' }, -- For luasnip users.
-      { name = 'ultisnips' }, -- For ultisnips users.
-      { name = 'snippy' }, -- For snippy users.
-    }, {
-      { name = 'buffer' },
-    })
-  })
-
-  -- Set configuration for specific filetype.
-  cmp.setup.filetype('gitcommit', {
-    sources = cmp.config.sources({
-      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
-    }, {
-      { name = 'buffer' },
-    })
-  })
-
-  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-  cmp.setup.cmdline('/', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = {
-      { name = 'buffer' }
-    }
-  })
-
-  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-  cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
-      { name = 'path' }
-    }, {
-      { name = 'cmdline' }
-    })
-  })
-
-  -- Setup lspconfig.
-  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-  require('lspconfig')['clangd'].setup {
-    capabilities = capabilities
-  }
-EOF
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 
 
@@ -382,9 +303,12 @@ autocmd FileType c,cpp,objc vnoremap <Leader>cf :ClangFormat<CR>
 " if you install vim-operator-user
 autocmd FileType c,cpp,objc map <Leader>x <Plug>(operator-clang-format)
 " Toggle auto formatting:
-nmap <Leader>C :ClangFormatAutoToggle<CR>
+nmap <Leader>cf :ClangFormatAutoToggle<CR>
 
 autocmd FileType c ClangFormatAutoEnable
+autocmd FileType h ClangFormatAutoEnable
+autocmd FileType cpp ClangFormatAutoEnable
+autocmd FileType hpp ClangFormatAutoEnable
 
 " Clear highlighting on escape in normal mode
 nnoremap <esc> :noh<return><esc>
@@ -413,3 +337,9 @@ let g:nvimgdb_config_override = {
   inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 
+" Include file
+    let $V=stdpath('config')
+    so $V/macos.vim
+    so $V/maps.vim
+    so $V/lsp.vim
+    so $V/markdown.vim
