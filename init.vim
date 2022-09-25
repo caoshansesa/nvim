@@ -120,7 +120,13 @@ call plug#end()
     let g:rg_derive_root='true'
 
     " Ctrl+f+f will search files by content
-    nnoremap <silent> <c-f><c-f> :RG<CR>
+
+    command! -bang -nargs=* RgExact
+      \ call fzf#vim#grep(
+      \   'rg -F --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+      \   fzf#vim#with_preview(), <bang>0)
+
+    nnoremap <silent> <c-f><c-f> :execute 'RgExact ' . expand('<cword>')<CR>
 
 " Tag Bar
 	let g:tagbar_width=30
@@ -163,7 +169,7 @@ call plug#end()
 
 " Access and source vimrc
 	"Easy access to vimrc
-	nnoremap <leader>ev :view $MYVIMRC<cr>
+	nnoremap <leader>ev :vnew $MYVIMRC<cr>
 	"Reload vimrc
 	nnoremap <leader>sv :source $MYVIMRC<cr>
 
@@ -380,33 +386,6 @@ nmap <Leader>C :ClangFormatAutoToggle<CR>
 
 autocmd FileType c ClangFormatAutoEnable
 
-" vsnip setting
-
-" Expand
-imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-
-" Expand or jump
-imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-
-" Jump forward or backward
-imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-
-" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
-" See https://github.com/hrsh7th/vim-vsnip/pull/50
-nmap        s   <Plug>(vsnip-select-text)
-xmap        s   <Plug>(vsnip-select-text)
-nmap        S   <Plug>(vsnip-cut-text)
-xmap        S   <Plug>(vsnip-cut-text)
-
-" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
-let g:vsnip_filetypes = {}
-let g:vsnip_filetypes.javascriptreact = ['javascript']
-
 " Clear highlighting on escape in normal mode
 nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
@@ -427,16 +406,7 @@ let g:nvimgdb_config_override = {
   \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
   \ }
 
-nmap <Leader> c <Plug>CheatList
 
-
-
-command! -bang -nargs=* RgExact
-  \ call fzf#vim#grep(
-  \   'rg -F --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview(), <bang>0)
-
-nmap <Leader>G :execute 'RgExact ' . expand('<cword>') <Cr>
 
 " LSP TAB
   inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
