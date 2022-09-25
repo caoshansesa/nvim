@@ -2,18 +2,32 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
 	Plug 'morhetz/gruvbox'
 	Plug 'preservim/nerdtree'
-	Plug 'scrooloose/nerdtree'          " File tree manager
-	Plug 'jistr/vim-nerdtree-tabs'      " enhance nerdtree's tabs
-	Plug 'tiagofumo/vim-nerdtree-syntax-highlight' " enhance devicons
 	Plug 'Yggdroot/indentLine'			
 	Plug 'vim-airline/vim-airline'       
 	Plug 'vim-airline/vim-airline-themes' "airline 的主题
 
-	Plug 'neovim/nvim-lspconfig'
-	Plug 'nvim-lua/completion-nvim'
+    Plug 'neovim/nvim-lspconfig'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'hrsh7th/cmp-cmdline'
+    Plug 'hrsh7th/nvim-cmp'
 
-	Plug 'majutsushi/tagbar' " Tag bar 可以用来展示当前的文件的一些函数
-    Plug '9mm/vim-closer' " Bracket closure
+    " GDB
+    Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh' }
+
+    " C++ cheetsheet
+    Plug 'RishabhRD/popfix'
+    Plug 'RishabhRD/nvim-cheat.sh'
+
+    " Clan format 
+    Plug 'cjuniet/clang-format.vim'
+
+    " For vsnip users.
+    Plug 'hrsh7th/cmp-vsnip'
+    Plug 'hrsh7th/vim-vsnip-integ'
+    Plug 'hrsh7th/vim-vsnip'
+    Plug 'majutsushi/tagbar' " Tag bar 可以用来展示当前的文件的一些函数
        
     Plug 'nvim-treesitter/nvim-treesitter' " New color tune
     Plug 'honza/vim-snippets'
@@ -22,11 +36,13 @@ call plug#begin('~/.config/nvim/autoload/plugged')
     Plug 'SirVer/ultisnips'
     
     " Git Related 
-    Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+    Plug 'mhinz/vim-signify'
     Plug 'tpope/vim-fugitive'
     Plug 'tpope/vim-rhubarb'
     Plug 'junegunn/gv.vim'
-
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'sindrets/diffview.nvim'
+    
     " Vim Markdown Preview
     Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
     Plug 'SirVer/ultisnips',{'for':'markdown'}
@@ -45,6 +61,11 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
     "Support fuzzy file searching 
     Plug 'junegunn/fzf.vim'
+
+    Plug 'honza/vim-snippets'
+    Plug 'neoclide/coc-snippets'
+
+    Plug 'bfrg/vim-cpp-modern'
 
 call plug#end()
 
@@ -80,7 +101,7 @@ call plug#end()
     let g:fzf_history_dir = '~/.local/share/fzf-history'
 
     function! RipgrepFzf(query, fullscreen)
-      let command_fmt = 'rg  -g !build* --fixed-strings --column --line-number --no-heading --color=always  --smart-case -- %s || true '
+      let command_fmt = 'Rg  -g !build* --fixed-strings --column --line-number --no-heading --color=always  --smart-case -- %s || true '
       let initial_command = printf(command_fmt, shellescape(a:query))
       let reload_command = printf(command_fmt, '{q}')
       let cwpath = getcwd() . '/'
@@ -142,7 +163,7 @@ call plug#end()
 
 " Access and source vimrc
 	"Easy access to vimrc
-	nnoremap <leader>ev :vs $MYVIMRC<cr>
+	nnoremap <leader>ev :view $MYVIMRC<cr>
 	"Reload vimrc
 	nnoremap <leader>sv :source $MYVIMRC<cr>
 
@@ -242,7 +263,8 @@ nmap <leader>gc :Commits<CR>
 	set updatetime=300
 	set shortmess+=c
 	set signcolumn=yes
-	 
+    set completeopt-=preview
+
 	" hi Normal ctermfg=252 ctermbg=none "背景透明
 	" au FileType gitcommit,gitrebase let g:gutentags_enabled=0
 	if has("autocmd")
@@ -259,15 +281,165 @@ nmap <leader>gc :Commits<CR>
       autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
     augroup END
 
-sign define LspDiagnosticsSignError text=🔴
-sign define LspDiagnosticsSignWarning text=⚪️
-sign define LspDiagnosticsSignInformation text=🔵
-sign define LspDiagnosticsSignHint text=⚪️
-
 " Include file
     let $V=stdpath('config')
     so $V/macos.vim
     so $V/maps.vim
     so $V/lsp.vim
     so $V/markdown.vim
+" this is setting for auto completion
+set completeopt=menu,menuone,noselect
+
+lua <<EOF
+  -- Setup nvim-cmp.
+  local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    window = {
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' }, -- For vsnip users.
+      { name = 'luasnip' }, -- For luasnip users.
+      { name = 'ultisnips' }, -- For ultisnips users.
+      { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Set configuration for specific filetype.
+  cmp.setup.filetype('gitcommit', {
+    sources = cmp.config.sources({
+      { name = 'cmp_git' }, -- You can specify the `cmp_git` source if you were installed it.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline('/', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+
+  -- Setup lspconfig.
+  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+  -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
+  require('lspconfig')['clangd'].setup {
+    capabilities = capabilities
+  }
+EOF
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+
+
+" Vim Clang format
+let g:clang_format#style_options = {
+            \ "AccessModifierOffset" : -4,
+            \ "AllowShortIfStatementsOnASingleLine" : "true",
+            \ "AlwaysBreakTemplateDeclarations" : "true",
+            \ "Standard" : "C++11"}
+
+" map to <Leader>cf in C++ code
+autocmd FileType c,cpp,objc nnoremap <Leader>cf :<C-u>ClangFormat<CR>
+autocmd FileType c,cpp,objc vnoremap <Leader>cf :ClangFormat<CR>
+" if you install vim-operator-user
+autocmd FileType c,cpp,objc map <Leader>x <Plug>(operator-clang-format)
+" Toggle auto formatting:
+nmap <Leader>C :ClangFormatAutoToggle<CR>
+
+autocmd FileType c ClangFormatAutoEnable
+
+" vsnip setting
+
+" Expand
+imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
+" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.javascriptreact = ['javascript']
+
+" Clear highlighting on escape in normal mode
+nnoremap <esc> :noh<return><esc>
+nnoremap <esc>^[ <esc>^[
+
+" gdb
+
+function! NvimGdbNoTKeymaps()
+  tnoremap <silent> <buffer> <esc> <c-\><c-n>
+endfunction
+
+let g:nvimgdb_config_override = {
+  \ 'key_next': 'n',
+  \ 'key_step': 's',
+  \ 'key_finish': 'f',
+  \ 'key_continue': 'c',
+  \ 'key_until': 'u',
+  \ 'key_breakpoint': 'b',
+  \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
+  \ }
+
+nmap <Leader> c <Plug>CheatList
+
+
+
+command! -bang -nargs=* RgExact
+  \ call fzf#vim#grep(
+  \   'rg -F --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+
+nmap <Leader>G :execute 'RgExact ' . expand('<cword>') <Cr>
+
+" LSP TAB
+  inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
 
