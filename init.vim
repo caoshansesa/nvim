@@ -32,7 +32,6 @@ call plug#begin('~/.config/nvim/autoload/plugged')
     Plug 'nvim-treesitter/nvim-treesitter' " New color tune
     Plug 'honza/vim-snippets'
     Plug 'tpope/vim-commentary'
-    Plug 'mizlan/termbufm'
     Plug 'SirVer/ultisnips'
     
     " Git Related 
