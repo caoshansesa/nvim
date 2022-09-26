@@ -66,6 +66,9 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
     Plug 'bfrg/vim-cpp-modern'
 
+    " Float term
+    Plug 'voldikss/vim-floaterm'
+
 call plug#end()
 
 " Ctrl+F will search files by name 
@@ -331,6 +334,11 @@ let g:nvimgdb_config_override = {
   inoremap <silent><expr> <TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
   inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
+" Configuration example
+let g:floaterm_keymap_new    = '<F2>'
+let g:floaterm_keymap_toggle = '<F3>'
+let g:floaterm_keymap_prev   = '<F4>'
+let g:floaterm_keymap_next   = '<F5>'
 
 " Include file
     let $V=stdpath('config')
