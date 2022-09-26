@@ -125,7 +125,8 @@ call plug#end()
       \   'rg -F --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
       \   fzf#vim#with_preview(), <bang>0)
 
-    nnoremap <silent> <c-f><c-f> :execute 'RgExact ' . expand('<cword>')<CR>
+    nnoremap <silent> <c-f><c-f><c-f> :execute 'RgExact ' . expand('<cword>')<CR>
+    nnoremap <silent> <c-f><c-f> :execute 'RgExact '<CR>
 
 " Tag Bar
 	let g:tagbar_width=30
@@ -267,7 +268,7 @@ set updatetime=300
 set shortmess+=c
 set signcolumn=yes
 set completeopt-=preview
-
+set nofsync " turn off this for windows
 au FileType gitcommit,gitrebase let g:gutentags_enabled=0
 if has("autocmd")
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
