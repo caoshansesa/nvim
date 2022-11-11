@@ -21,7 +21,7 @@ call plug#begin('~/.config/nvim/autoload/plugged')
     Plug 'RishabhRD/nvim-cheat.sh'
 
     " Clan format 
-    Plug 'cjuniet/clang-format.vim'
+    Plug 'rhysd/vim-clang-format'
 
     " For vsnip users.
     Plug 'hrsh7th/cmp-vsnip'
