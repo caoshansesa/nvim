@@ -68,7 +68,6 @@ call plug#begin('~/.config/nvim/autoload/plugged')
 
     " Float term
     Plug 'voldikss/vim-floaterm'
-
 call plug#end()
 
 " Ctrl+F will search files by name 
@@ -272,6 +271,8 @@ set shortmess+=c
 set signcolumn=yes
 set completeopt-=preview
 set nofsync " turn off this for windows
+set mouse=
+
 au FileType gitcommit,gitrebase let g:gutentags_enabled=0
 if has("autocmd")
     au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -339,6 +340,7 @@ let g:floaterm_keymap_new    = '<F2>'
 let g:floaterm_keymap_toggle = '<F3>'
 let g:floaterm_keymap_prev   = '<F4>'
 let g:floaterm_keymap_next   = '<F5>'
+
 
 " Include file
     let $V=stdpath('config')
