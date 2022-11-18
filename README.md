@@ -17,8 +17,10 @@ Linux and others: $XDG_CONFIG_HOME/clangd/config.yaml, typically ~/.config/clang
 
 ### use a .clangd in the root folder
 
-```
 Add .clangd in your root dir
+
+```
+
 
 CompileFlags:
     Add: [-std=c++20]
