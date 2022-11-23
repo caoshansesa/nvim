@@ -29,3 +29,6 @@ CompileFlags:
  
  [llvm_cland web](https://clangd.llvm.org/config)
 
+ [clang-format-configurator](https://zed0.co.uk/clang-format-configurator/)
+
+
