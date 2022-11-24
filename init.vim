@@ -301,13 +301,10 @@ let g:clang_format#style_options = {
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "Standard" : "C++11"}
 
+let g:clang_format#detect_style_file = 1
 " map to <Leader>cf in C++ code
 autocmd FileType c,cpp,objc nnoremap <Leader>cf :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <Leader>cf :ClangFormat<CR>
-" if you install vim-operator-user
-autocmd FileType c,cpp,objc map <Leader>x <Plug>(operator-clang-format)
-" Toggle auto formatting:
-nmap <Leader>cf :ClangFormatAutoToggle<CR>
 
 " Clear highlighting on escape in normal mode
 nnoremap <esc> :noh<return><esc>
